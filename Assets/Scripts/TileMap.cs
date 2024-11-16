@@ -172,22 +172,23 @@ public class TileMap : MonoBehaviour
         return playerTilePosition;
     }
 
-    public void LoadPremadeMap(string Resources)
+    public void LoadPremadeMap(string mapFileName)
     {
-        TextAsset mapDataAsset = Resources.Load<TextAsset>("TextFileMap/" + Resources);
+        TextAsset mapDataAsset = Resources.Load<TextAsset>("TextFileMap/" + mapFileName);
 
         if (mapDataAsset != null)
         {
-            Debug.Log("Premade map successfully loaded: " + Resources);
+            Debug.Log("Premade map successfully loaded: " + mapFileName);
 
-            string mapData = mapDataAsset.text; //this gets the text content from the file
+            string mapData = mapDataAsset.text;
             Debug.Log("Loaded map data:\n" + mapData);
 
-            ConvertMapToTilemap(mapData); //this uses the data to display the map
+            ConvertMapToTilemap(mapData);
         }
         else
         {
-            Debug.LogError("Map file not found in Resources folder: " + Resources);
+            Debug.LogError("Map file not found in Resources folder: " + mapFileName);
         }
     }
+
 }
