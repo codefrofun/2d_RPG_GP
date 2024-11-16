@@ -1,6 +1,6 @@
 using System.Linq;
-using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine;
 
 public class TileMap : MonoBehaviour
 {
@@ -11,54 +11,69 @@ public class TileMap : MonoBehaviour
     public Tile floorTile;
     public Tile playerTile;
 
+    private Vector3Int playerTilePosition;
+
+    public bool useGeneratedMap = true;
+    public bool useTextFileMap = false;
+
+    public string textFileName = "TextFile";
+    public string generatedMapName = "GeneratedMap";
+
     private const char wall = '#';
     private const char door = 'O';
     private const char chest = '$';
     private const char floor = '-';
     private const char player = '@';
 
-    public char[,] multidimensionalArray = new char[20, 20];
-
-    private Vector3Int playerTilePosition;
-    private bool isMoving = false;
-
     void Start()
     {
-        string pathToMyFile = "TextFile";
-        TextAsset mapDataAsset = Resources.Load<TextAsset>(pathToMyFile);
+        LoadMap();
+    }
+
+    void OnValidate()
+    {
+        if (useGeneratedMap && useTextFileMap)
+        {
+            Debug.LogWarning("Only one map can be selected at a time. Switching to generated map.");
+            useTextFileMap = false;
+        }
+
+        LoadMap();
+    }
+
+    void LoadMap()
+    {
+        tilemap.ClearAllTiles();
+        if (useTextFileMap)
+        {
+            LoadTextFileMap();
+        }
+        else if (useGeneratedMap)
+        {
+            GenerateAndLoadMap();
+        }
+    }
+
+    void LoadTextFileMap()
+    {
+        TextAsset mapDataAsset = Resources.Load<TextAsset>(textFileName);
 
         if (mapDataAsset != null)
         {
-            Debug.Log("Map file successfully loaded.");
-            string[] myLines = mapDataAsset.text.Split('\n');
-
-            int countHowManyIs = 0;
-            for (int y = 0; y < myLines.Length; y++)
-            {
-                string myLine = myLines[y];
-                for (int x = 0; x < myLine.Length; x++)
-                {
-                    char myChar = myLine[x];
-                    if (x < multidimensionalArray.GetLength(0) && y < multidimensionalArray.GetLength(1))
-                    {
-                        multidimensionalArray[x, y] = myChar;
-                    }
-                }
-            }
-
-            string loadedMap = string.Join("\n", myLines);
-            Debug.Log("Loaded Map Data:\n" + loadedMap);
-
-            string mapData = GenerateMapString(20, 15);
+            string mapData = mapDataAsset.text;
             ConvertMapToTilemap(mapData);
         }
         else
         {
-            Debug.LogError("Map file not found in Resources folder: " + pathToMyFile);
+            Debug.LogError("Text file map not found: " + textFileName);
         }
     }
 
-
+    void GenerateAndLoadMap()
+    {
+        string mapData = GenerateMapString(20, 15);
+        ConvertMapToTilemap(mapData);
+    }
 
     public string GenerateMapString(int width, int height)
     {
@@ -95,21 +110,20 @@ public class TileMap : MonoBehaviour
             for (int x = 1; x < width - 1; x++)
             {
                 if ((x == 1 || x == width - 2 || y == 1 || y == height - 2) &&
-                    ((map[y - 1, x] == wall) || (map[y + 1, x] == wall) || (map[y, x - 1] == wall) || (map[y, x + 1] == wall)) &&  //checking border, place doors adjacent to them
+                    ((map[y - 1, x] == wall) || (map[y + 1, x] == wall) || (map[y, x - 1] == wall) || (map[y, x + 1] == wall)) &&
                     Random.Range(0, 100) < 10)
                 {
-                    map[y, x] = door;  //place door
+                    map[y, x] = door;
                 }
             }
         }
 
-
         int chestsToPlace = Random.Range(1, 5);
         Vector2Int[] corners = new Vector2Int[] {
-            new Vector2Int(1, 1),  //top-left
-            new Vector2Int(width - 2, 1),  //top-right
-            new Vector2Int(1, height - 2),  //bottom-left
-            new Vector2Int(width - 2, height - 2)  //bottom-right
+            new Vector2Int(1, 1),
+            new Vector2Int(width - 2, 1),
+            new Vector2Int(1, height - 2),
+            new Vector2Int(width - 2, height - 2)
         };
 
         System.Random rand = new System.Random();
@@ -138,17 +152,13 @@ public class TileMap : MonoBehaviour
     public void ConvertMapToTilemap(string mapData)
     {
         string[] rows = mapData.Split('\n');
-
         for (int y = 0; y < rows.Length; y++)
         {
             for (int x = 0; x < rows[y].Length; x++)
             {
                 char tile = rows[y][x];
-                TileBase tileToPlace = null;
-
-                tileToPlace = floorTile;
+                TileBase tileToPlace = floorTile;
                 Vector3Int tilePosition = new Vector3Int(x, y, 0);
-                tilemap.SetTile(tilePosition, tileToPlace);
 
                 if (tile == '#') tileToPlace = wallTile;
                 else if (tile == '$') tileToPlace = chestTile;
@@ -174,23 +184,9 @@ public class TileMap : MonoBehaviour
         return playerTilePosition;
     }
 
-    public void LoadPremadeMap(string mapFileName)
+    public void SetPlayerTilePosition(Vector3Int newPosition)
     {
-        TextAsset mapDataAsset = Resources.Load<TextAsset>("TextFileMap/" + mapFileName);
-
-        if (mapDataAsset != null)
-        {
-            Debug.Log("Premade map successfully loaded: " + mapFileName);
-
-            string mapData = mapDataAsset.text;
-            Debug.Log("Loaded map data:\n" + mapData);
-
-            ConvertMapToTilemap(mapData);
-        }
-        else
-        {
-            Debug.LogError("Map file not found in Resources folder: " + mapFileName);
-        }
+        playerTilePosition = newPosition;
+        tilemap.SetTile(playerTilePosition, playerTile); 
     }
-
 }

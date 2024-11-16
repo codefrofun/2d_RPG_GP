@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -10,12 +9,12 @@ public class WASD : MonoBehaviour
     private Vector3Int playerTilePosition;
     private bool isMoving = false;
 
-    private TileMap tileMapScript;
+    private TileMap tileMapLoaderScript;
 
     void Start()
     {
-        tileMapScript = tilemap.GetComponent<TileMap>();
-        playerTilePosition = tileMapScript.GetPlayerTilePosition();
+        tileMapLoaderScript = GameObject.Find("TileMapLoaderObject").GetComponent<TileMap>();
+        playerTilePosition = tileMapLoaderScript.GetPlayerTilePosition();
     }
 
     void Update()
@@ -33,12 +32,13 @@ public class WASD : MonoBehaviour
     {
         Vector3Int targetTilePosition = playerTilePosition + direction;
         TileBase targetTile = tilemap.GetTile(targetTilePosition);
-        if (targetTile != null && targetTile != tileMapScript.wallTile && targetTile != tileMapScript.chestTile && targetTile != tileMapScript.doorTile)
+        if (targetTile != null && targetTile != tileMapLoaderScript.wallTile && targetTile != tileMapLoaderScript.chestTile && targetTile != tileMapLoaderScript.doorTile)
         {
             isMoving = true;
-            tilemap.SetTile(playerTilePosition, tileMapScript.floorTile);
+            tilemap.SetTile(playerTilePosition, tileMapLoaderScript.floorTile);
             tilemap.SetTile(targetTilePosition, playerTile);
             playerTilePosition = targetTilePosition;
+            tileMapLoaderScript.SetPlayerTilePosition(playerTilePosition);
             StartCoroutine(MovementDelay());
         }
         else
