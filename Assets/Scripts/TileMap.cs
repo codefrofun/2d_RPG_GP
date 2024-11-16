@@ -24,12 +24,13 @@ public class TileMap : MonoBehaviour
 
     void Start()
     {
-        string pathToMyFile = "Assets/Resources/TextMap/MapTextFile.txt";
+        string pathToMyFile = "TextFile";
+        TextAsset mapDataAsset = Resources.Load<TextAsset>(pathToMyFile);
 
-        if (System.IO.File.Exists(pathToMyFile))
+        if (mapDataAsset != null)
         {
-            string[] myLines = System.IO.File.ReadAllLines(pathToMyFile);
             Debug.Log("Map file successfully loaded.");
+            string[] myLines = mapDataAsset.text.Split('\n');
 
             int countHowManyIs = 0;
             for (int y = 0; y < myLines.Length; y++)
@@ -53,9 +54,10 @@ public class TileMap : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Map file not found at: " + pathToMyFile);
+            Debug.LogError("Map file not found in Resources folder: " + pathToMyFile);
         }
     }
+
 
 
     public string GenerateMapString(int width, int height)
