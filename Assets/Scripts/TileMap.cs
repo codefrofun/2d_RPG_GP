@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -24,11 +22,41 @@ public class TileMap : MonoBehaviour
     private Vector3Int playerTilePosition;
     private bool isMoving = false;
 
-    private void Start()
+    void Start()
     {
-        string mapData = GenerateMapString(20, 15);
-        ConvertMapToTilemap(mapData);
+        string pathToMyFile = "Assets/Resources/TextMap/MapTextFile.txt";
+
+        if (System.IO.File.Exists(pathToMyFile))
+        {
+            string[] myLines = System.IO.File.ReadAllLines(pathToMyFile);
+            Debug.Log("Map file successfully loaded.");
+
+            int countHowManyIs = 0;
+            for (int y = 0; y < myLines.Length; y++)
+            {
+                string myLine = myLines[y];
+                for (int x = 0; x < myLine.Length; x++)
+                {
+                    char myChar = myLine[x];
+                    if (x < multidimensionalArray.GetLength(0) && y < multidimensionalArray.GetLength(1))
+                    {
+                        multidimensionalArray[x, y] = myChar;
+                    }
+                }
+            }
+
+            string loadedMap = string.Join("\n", myLines);
+            Debug.Log("Loaded Map Data:\n" + loadedMap);
+
+            string mapData = GenerateMapString(20, 15);
+            ConvertMapToTilemap(mapData);
+        }
+        else
+        {
+            Debug.LogError("Map file not found at: " + pathToMyFile);
+        }
     }
+
 
     public string GenerateMapString(int width, int height)
     {
@@ -142,5 +170,24 @@ public class TileMap : MonoBehaviour
     public Vector3Int GetPlayerTilePosition()
     {
         return playerTilePosition;
+    }
+
+    public void LoadPremadeMap(string Resources)
+    {
+        TextAsset mapDataAsset = Resources.Load<TextAsset>("TextFileMap/" + Resources);
+
+        if (mapDataAsset != null)
+        {
+            Debug.Log("Premade map successfully loaded: " + Resources);
+
+            string mapData = mapDataAsset.text; //this gets the text content from the file
+            Debug.Log("Loaded map data:\n" + mapData);
+
+            ConvertMapToTilemap(mapData); //this uses the data to display the map
+        }
+        else
+        {
+            Debug.LogError("Map file not found in Resources folder: " + Resources);
+        }
     }
 }
