@@ -1,6 +1,9 @@
 using System.Linq;
 using UnityEngine.Tilemaps;
 using UnityEngine;
+using UnityEditor;
+using Unity.VisualScripting;
+using System.Net;
 
 public class TileMap : MonoBehaviour
 {
@@ -118,35 +121,42 @@ public class TileMap : MonoBehaviour
             }
         }
 
-        int chestsToPlace = Random.Range(1, 5);
-        Vector2Int[] corners = new Vector2Int[] {
-            new Vector2Int(1, 1),
-            new Vector2Int(width - 2, 1),
-            new Vector2Int(1, height - 2),
-            new Vector2Int(width - 2, height - 2)
-        };
-
-        System.Random rand = new System.Random();
-        corners = corners.OrderBy(x => rand.Next()).ToArray();
-        for (int i = 0; i < chestsToPlace; i++)
+        for (int i = 0; i < 2; i++)
         {
-            Vector2Int corner = corners[i];
-            map[corner.y, corner.x] = chest;
-        }
-
-        map[1, width / 2] = player;
-
-        string mapString = "";
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
+            int chests = Random.Range(1, 5);
+            if (chests == 1)
             {
-                mapString += map[y, x];
+                map[1, 1] = chest;
             }
-            mapString += "\n";
+            else if (chests == 2)
+            {
+                map[width - 2, 1] = chest;
+            }
+            else if (chests == 3)
+            {
+                map[1, height - 1] = chest;
+            }
+            else if (chests == 4)
+            {
+                map[width - 2, height - 2] = chest;
+            }
         }
 
-        return mapString;
+        return mapStringBuilder.ToString();
+    }
+
+
+        
+    public Vector2Int GetCorner(int width, int height)
+    {
+        Vector2Int cornerTopLeft = new Vector2Int(1, 1);
+        Vector2Int cornerTopRight = new Vector2Int(width - 1, 1);
+        Vector2Int cornerBottomLeft = new Vector2Int(1, height - 2);
+        Vector2Int cornerBottomRight = new Vector2Int(width - 1, height - 2);
+
+        
+
+        return Vector2Int.zero;
     }
 
     public void ConvertMapToTilemap(string mapData)
