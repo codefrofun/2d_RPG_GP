@@ -1,9 +1,6 @@
-using System.Linq;
 using UnityEngine.Tilemaps;
 using UnityEngine;
 using UnityEditor;
-using Unity.VisualScripting;
-using System.Net;
 
 public class TileMap : MonoBehaviour
 {
@@ -81,6 +78,7 @@ public class TileMap : MonoBehaviour
     public string GenerateMapString(int width, int height)
     {
         char[,] map = new char[height, width];
+        string mapString = "";
 
         for (int y = 0; y < height; y++)
         {
@@ -124,6 +122,7 @@ public class TileMap : MonoBehaviour
         for (int i = 0; i < 2; i++)
         {
             int chests = Random.Range(1, 5);
+
             if (chests == 1)
             {
                 map[1, 1] = chest;
@@ -142,11 +141,29 @@ public class TileMap : MonoBehaviour
             }
         }
 
-        return mapStringBuilder.ToString();
+        int playerX = width / 2;
+        int playerY = height / 2;
+
+        map[playerY, playerX] = player;
+        tileMapLoaderScript.SetPlayerTilePosition(playerTilePosition);
+
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                mapString += map[y, x];
+            }
+            mapString += "\n";
+        }
+
+        playerTilePosition = new Vector3Int(playerX, playerY, 0);
+
+        return mapString;
     }
 
 
-        
+
     public Vector2Int GetCorner(int width, int height)
     {
         Vector2Int cornerTopLeft = new Vector2Int(1, 1);
@@ -167,13 +184,14 @@ public class TileMap : MonoBehaviour
             for (int x = 0; x < rows[y].Length; x++)
             {
                 char tile = rows[y][x];
-                TileBase tileToPlace = floorTile;
+                TileBase tileToPlace = null;
                 Vector3Int tilePosition = new Vector3Int(x, y, 0);
 
                 if (tile == '#') tileToPlace = wallTile;
                 else if (tile == '$') tileToPlace = chestTile;
                 else if (tile == 'O') tileToPlace = doorTile;
                 else if (tile == '@') tileToPlace = playerTile;
+                else if (tile == '-') tileToPlace = floorTile;
 
                 if (tileToPlace != null)
                 {
