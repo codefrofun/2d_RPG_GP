@@ -9,12 +9,18 @@ public class WASD : MonoBehaviour
     private Vector3Int playerTilePosition;
     private bool isMoving = false;
 
-    private TileMap tileMapLoaderScript;
+    [SerializeField] private TileMap tileMapLoaderScript;
 
     void Start()
     {
-        tileMapLoaderScript = GameObject.Find("TileMapLoaderObject").GetComponent<TileMap>();
-        playerTilePosition = tileMapLoaderScript.GetPlayerTilePosition();
+        if (tileMapLoaderScript != null)
+        {
+            playerTilePosition = tileMapLoaderScript.GetPlayerTilePosition();
+        }
+        else
+        {
+            Debug.LogError("TileMapLoaderScript is not assigned!");
+        }
     }
 
     void Update()

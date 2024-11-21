@@ -1,6 +1,6 @@
+using System.Linq;
 using UnityEngine.Tilemaps;
 using UnityEngine;
-using UnityEditor;
 
 public class TileMap : MonoBehaviour
 {
@@ -78,7 +78,6 @@ public class TileMap : MonoBehaviour
     public string GenerateMapString(int width, int height)
     {
         char[,] map = new char[height, width];
-        string mapString = "";
 
         for (int y = 0; y < height; y++)
         {
@@ -119,35 +118,25 @@ public class TileMap : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < 2; i++)
-        {
-            int chests = Random.Range(1, 5);
+        int chestsToPlace = Random.Range(1, 5);
+        Vector2Int[] corners = new Vector2Int[] {
+            new Vector2Int(1, 1),
+            new Vector2Int(width - 2, 1),
+            new Vector2Int(1, height - 2),
+            new Vector2Int(width - 2, height - 2)
+        };
 
-            if (chests == 1)
-            {
-                map[1, 1] = chest;
-            }
-            else if (chests == 2)
-            {
-                map[width - 2, 1] = chest;
-            }
-            else if (chests == 3)
-            {
-                map[1, height - 1] = chest;
-            }
-            else if (chests == 4)
-            {
-                map[width - 2, height - 2] = chest;
-            }
+        System.Random rand = new System.Random();
+        corners = corners.OrderBy(x => rand.Next()).ToArray();
+        for (int i = 0; i < chestsToPlace; i++)
+        {
+            Vector2Int corner = corners[i];
+            map[corner.y, corner.x] = chest;
         }
 
-        int playerX = width / 2;
-        int playerY = height / 2;
+        map[1, width / 2] = player;
 
-        map[playerY, playerX] = player;
-        tileMapLoaderScript.SetPlayerTilePosition(playerTilePosition);
-
-
+        string mapString = "";
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -157,23 +146,7 @@ public class TileMap : MonoBehaviour
             mapString += "\n";
         }
 
-        playerTilePosition = new Vector3Int(playerX, playerY, 0);
-
         return mapString;
-    }
-
-
-
-    public Vector2Int GetCorner(int width, int height)
-    {
-        Vector2Int cornerTopLeft = new Vector2Int(1, 1);
-        Vector2Int cornerTopRight = new Vector2Int(width - 1, 1);
-        Vector2Int cornerBottomLeft = new Vector2Int(1, height - 2);
-        Vector2Int cornerBottomRight = new Vector2Int(width - 1, height - 2);
-
-        
-
-        return Vector2Int.zero;
     }
 
     public void ConvertMapToTilemap(string mapData)
@@ -215,6 +188,6 @@ public class TileMap : MonoBehaviour
     public void SetPlayerTilePosition(Vector3Int newPosition)
     {
         playerTilePosition = newPosition;
-        tilemap.SetTile(playerTilePosition, playerTile); 
+        tilemap.SetTile(playerTilePosition, playerTile);
     }
 }
