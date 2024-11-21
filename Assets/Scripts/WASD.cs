@@ -6,21 +6,20 @@ public class WASD : MonoBehaviour
 {
     public Tilemap tilemap;
     public Tile playerTile;
+    public TileMap tileMapLoaderScript;
+
     private Vector3Int playerTilePosition;
     private bool isMoving = false;
 
-    [SerializeField] private TileMap tileMapLoaderScript;
-
     void Start()
     {
-        if (tileMapLoaderScript != null)
+        if (tileMapLoaderScript == null)
         {
-            playerTilePosition = tileMapLoaderScript.GetPlayerTilePosition();
+            Debug.LogError("TileMapLoaderScript is not assigned in the Inspector!");
+            return;  // Stop the rest of the method if it's null
         }
-        else
-        {
-            Debug.LogError("TileMapLoaderScript is not assigned!");
-        }
+
+        playerTilePosition = tileMapLoaderScript.GetPlayerTilePosition();
     }
 
     void Update()
@@ -38,6 +37,7 @@ public class WASD : MonoBehaviour
     {
         Vector3Int targetTilePosition = playerTilePosition + direction;
         TileBase targetTile = tilemap.GetTile(targetTilePosition);
+
         if (targetTile != null && targetTile != tileMapLoaderScript.wallTile && targetTile != tileMapLoaderScript.chestTile && targetTile != tileMapLoaderScript.doorTile)
         {
             isMoving = true;
