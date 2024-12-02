@@ -118,23 +118,25 @@ public class TileMap : MonoBehaviour
             }
         }
 
+
+        map[1, width / 2] = player;
+
         int chestsToPlace = Random.Range(1, 5);
-        Vector2Int[] corners = new Vector2Int[] {
-            new Vector2Int(1, 1),
+        Vector2Int[] corners = new Vector2Int[]
+        {
+            new Vector2Int(1,1),
             new Vector2Int(width - 2, 1),
-            new Vector2Int(1, height - 2),
+            new Vector2Int(1, height  - 2),
             new Vector2Int(width - 2, height - 2)
         };
 
-        System.Random rand = new System.Random();
-        corners = corners.OrderBy(x => rand.Next()).ToArray();
-        for (int i = 0; i < chestsToPlace; i++)
+        for(int i = 0; i < chestsToPlace; i++)
         {
-            Vector2Int corner = corners[i];
+            int randomCornerIndex = Random.Range(0, corners.Length);
+            Vector2Int corner = corners[randomCornerIndex];
             map[corner.y, corner.x] = chest;
-        }
 
-        map[1, width / 2] = player;
+        }
 
         string mapString = "";
         for (int y = 0; y < height; y++)

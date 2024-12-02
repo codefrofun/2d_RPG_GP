@@ -38,6 +38,8 @@ public class WASD : MonoBehaviour
         Vector3Int targetTilePosition = playerTilePosition + direction;
         TileBase targetTile = tilemap.GetTile(targetTilePosition);
 
+        if (targetTile != null /* && targetTile != tileMapLoaderScript.wallTile && targetTile != tileMapLoaderScript.chestTile && targetTile != tileMapLoaderScript.doorTile */ )
+
         if (targetTile != null && targetTile != tileMapLoaderScript.wallTile && targetTile != tileMapLoaderScript.chestTile && targetTile != tileMapLoaderScript.doorTile)
         {
             isMoving = true;
@@ -49,7 +51,7 @@ public class WASD : MonoBehaviour
         }
         else
         {
-            Debug.Log("You can’t walk there!");
+            Debug.Log("You can't walk there!");
         }
     }
 
