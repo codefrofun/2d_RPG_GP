@@ -138,8 +138,6 @@ public class TileMap : MonoBehaviour
 
         }
 
-
-
         string mapString = "";
         for (int y = 0; y < height; y++)
         {
