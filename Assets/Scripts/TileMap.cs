@@ -161,13 +161,14 @@ public class TileMap : MonoBehaviour
             for (int x = 0; x < rows[y].Length; x++)
             {
                 char tile = rows[y][x];
-                TileBase tileToPlace = floorTile;
+                TileBase tileToPlace = null;
                 Vector3Int tilePosition = new Vector3Int(x, y, 0);
 
                 if (tile == '#') tileToPlace = wallTile;
                 else if (tile == '$') tileToPlace = chestTile;
                 else if (tile == 'O') tileToPlace = doorTile;
                 else if (tile == '@') tileToPlace = playerTile;
+                else if (tile == '-') tileToPlace = floorTile;
 
                 if (tileToPlace != null)
                 {
@@ -191,6 +192,6 @@ public class TileMap : MonoBehaviour
     public void SetPlayerTilePosition(Vector3Int newPosition)
     {
         playerTilePosition = newPosition;
-        tilemap.SetTile(playerTilePosition, playerTile); 
+        tilemap.SetTile(playerTilePosition, playerTile);
     }
 }

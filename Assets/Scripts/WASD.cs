@@ -6,14 +6,19 @@ public class WASD : MonoBehaviour
 {
     public Tilemap tilemap;
     public Tile playerTile;
+    public TileMap tileMapLoaderScript;
+
     private Vector3Int playerTilePosition;
     private bool isMoving = false;
 
-    private TileMap tileMapLoaderScript;
-
     void Start()
     {
-        tileMapLoaderScript = GameObject.Find("TileMapLoaderObject").GetComponent<TileMap>();
+        if (tileMapLoaderScript == null)
+        {
+            Debug.LogError("TileMapLoaderScript is not assigned in the Inspector!");
+            return;  // Stop the rest of the method if it's null
+        }
+
         playerTilePosition = tileMapLoaderScript.GetPlayerTilePosition();
     }
 
@@ -32,7 +37,10 @@ public class WASD : MonoBehaviour
     {
         Vector3Int targetTilePosition = playerTilePosition + direction;
         TileBase targetTile = tilemap.GetTile(targetTilePosition);
+
         if (targetTile != null /* && targetTile != tileMapLoaderScript.wallTile && targetTile != tileMapLoaderScript.chestTile && targetTile != tileMapLoaderScript.doorTile */ )
+
+        if (targetTile != null && targetTile != tileMapLoaderScript.wallTile && targetTile != tileMapLoaderScript.chestTile && targetTile != tileMapLoaderScript.doorTile)
         {
             isMoving = true;
             tilemap.SetTile(playerTilePosition, tileMapLoaderScript.floorTile);
@@ -43,7 +51,7 @@ public class WASD : MonoBehaviour
         }
         else
         {
-            Debug.Log("You can’t walk there!");
+            Debug.Log("You can't walk there!");
         }
     }
 
