@@ -111,7 +111,7 @@ public class TileMap : MonoBehaviour
             {
                 if ((x == 1 || x == width - 2 || y == 1 || y == height - 2) &&
                     ((map[y - 1, x] == wall) || (map[y + 1, x] == wall) || (map[y, x - 1] == wall) || (map[y, x + 1] == wall)) &&
-                    Random.Range(0, 100) < 10)
+                    Random.Range(0, 100) < 5)
                 {
                     map[y, x] = door;
                 }
