@@ -7,24 +7,20 @@ public class HealthSystem : MonoBehaviour
 {
     public int health;
     public string healthStatus;
-    public int shield;
     public int lives;
-    public int xp;
     public int level;
     public bool preventRevive = false;
 
     public HealthSystem()
     {
         health = 100;
-        shield = 100;
         lives = 3;
         level = 1;
-        xp = 0;
     }
 
     public string ShowHUD()
     {
-        return $"HP: {health}  Shield: {shield}  Lives: {lives} \nStatus: {healthStatus} EXP: {xp}  Level: {level}";
+        return $"HP: {health}  Lives: {lives}  Level: {level}  \nStatus: {healthStatus}";
     }
 
     public void TakeDamage(int damage)
@@ -33,20 +29,7 @@ public class HealthSystem : MonoBehaviour
         {
             return;
         }
-
-        if (shield > 0)
-        {
-            shield -= damage;
-            if (shield < 0)
-            {
-                health += shield;
-                shield = 0;
-            }
-        }
-        else
-        {
             health -= damage;
-        }
 
         if (health <= 0)
         {
@@ -56,38 +39,6 @@ public class HealthSystem : MonoBehaviour
     }
 
 
-    public void Heal(int hp)
-    {
-        if (hp < 0)
-        {
-            return;
-        }
-
-        health += hp;
-        if (health > 100)
-        {
-            health = 100;
-        }
-        UpdateHealthStatus();
-    }
-
-    public void RegenerateShield(int hp)
-    {
-        if (hp < 0)
-        {
-            return;
-        }
-
-        if (shield < 100)
-        {
-            shield += hp;
-        }
-        if (shield > 100)
-        {
-            shield = 100;
-        }
-    }
-
     public void Revive()
     {
         if (preventRevive)
@@ -96,7 +47,6 @@ public class HealthSystem : MonoBehaviour
         if (lives > 0)
         {
             health = 100;
-            shield = 100;
             lives--;
             UpdateHealthStatus();
         }
@@ -111,7 +61,6 @@ public class HealthSystem : MonoBehaviour
     {
         Console.WriteLine("Startover");
         health = 100;
-        shield = 100;
         lives = 3;
         UpdateHealthStatus();
     }
@@ -137,25 +86,6 @@ public class HealthSystem : MonoBehaviour
         else
         {
             healthStatus = "Full Health";
-        }
-    }
-
-    // Optional XP system methods
-    public void IncreaseXP(int exp)
-    {
-        xp += exp;
-        while (xp >= 100)
-        {
-            if (level < 99)
-            {
-                level++;
-                xp -= 100;
-            }
-            else
-            {
-                xp = 100;
-                break;
-            }
         }
     }
 }

@@ -41,7 +41,7 @@ public class TileMap : MonoBehaviour
         LoadMap();
     }
 
-    void LoadMap()
+    public void LoadMap()
     {
         tilemap.ClearAllTiles();
         if (useTextFileMap)

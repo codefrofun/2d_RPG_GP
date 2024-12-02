@@ -7,6 +7,7 @@ public class WASD : MonoBehaviour
     public Tilemap tilemap;
     public Tile playerTile;
     public TileMap tileMapLoaderScript;
+    public Vector3 spawn;
 
     private Vector3Int playerTilePosition;
     private bool isMoving = false;
@@ -20,7 +21,8 @@ public class WASD : MonoBehaviour
         }
 
         playerTilePosition = tileMapLoaderScript.GetPlayerTilePosition();
-    }
+        //tileMapLoaderScript.map[1, tileMapLoaderScript.width / 2] = spawn;                !!!
+    } 
 
     void Update()
     {
@@ -38,8 +40,6 @@ public class WASD : MonoBehaviour
         Vector3Int targetTilePosition = playerTilePosition + direction;
         TileBase targetTile = tilemap.GetTile(targetTilePosition);
 
-        if (targetTile != null /* && targetTile != tileMapLoaderScript.wallTile && targetTile != tileMapLoaderScript.chestTile && targetTile != tileMapLoaderScript.doorTile */ )
-
         if (targetTile != null && targetTile != tileMapLoaderScript.wallTile && targetTile != tileMapLoaderScript.chestTile && targetTile != tileMapLoaderScript.doorTile)
         {
             isMoving = true;
@@ -48,6 +48,11 @@ public class WASD : MonoBehaviour
             playerTilePosition = targetTilePosition;
             tileMapLoaderScript.SetPlayerTilePosition(playerTilePosition);
             StartCoroutine(MovementDelay());
+        }
+        else if(targetTile == tileMapLoaderScript.doorTile)
+        {
+            tileMapLoaderScript.LoadMap();
+            // Reset player position               !!!
         }
         else
         {
