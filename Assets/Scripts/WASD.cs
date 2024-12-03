@@ -7,10 +7,10 @@ public class WASD : MonoBehaviour
     public Tilemap tilemap;
     public Tile playerTile;
     public TileMap tileMapLoaderScript;
-    public Vector3 spawn;
 
     private Vector3Int playerTilePosition;
     private bool isMoving = false;
+    private bool isInRoomTransition = false;
 
     void Start()
     {
@@ -21,12 +21,11 @@ public class WASD : MonoBehaviour
         }
 
         playerTilePosition = tileMapLoaderScript.GetPlayerTilePosition();
-        //tileMapLoaderScript.map[1, tileMapLoaderScript.width / 2] = spawn;                !!!
     } 
 
     void Update()
     {
-        if (!isMoving)
+        if (!isMoving && !isInRoomTransition)
         {
             if (Input.GetKey(KeyCode.W)) TryMove(Vector3Int.up);
             if (Input.GetKey(KeyCode.S)) TryMove(Vector3Int.down);
@@ -49,10 +48,13 @@ public class WASD : MonoBehaviour
             tileMapLoaderScript.SetPlayerTilePosition(playerTilePosition);
             StartCoroutine(MovementDelay());
         }
-        else if(targetTile == tileMapLoaderScript.doorTile)
+        else if(targetTile == tileMapLoaderScript.doorTile && !isInRoomTransition)
         {
+            isInRoomTransition = true;
             tileMapLoaderScript.LoadMap();
-            // Reset player position               !!!
+            playerTilePosition = tileMapLoaderScript.GetPlayerTilePosition();
+            tilemap.SetTile(playerTilePosition, playerTile);
+            StartCoroutine(MovementDelay());
         }
         else
         {
@@ -64,5 +66,10 @@ public class WASD : MonoBehaviour
     {
         yield return new WaitForSeconds(0.2f);
         isMoving = false;
+
+        if (isInRoomTransition)
+        {
+            isInRoomTransition = false;
+        }
     }
 }
