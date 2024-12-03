@@ -29,12 +29,6 @@ public class HealthSystem : MonoBehaviour
             return;
         }
             health -= damage;
-
-        if (health <= 0)
-        {
-            Revive();
-        }
-        UpdateHealthStatus();
     }
 
     public void ResetGame()
