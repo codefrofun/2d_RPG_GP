@@ -10,8 +10,10 @@ public class TileMap : MonoBehaviour
     public Tile chestTile;
     public Tile floorTile;
     public Tile playerTile;
+    public Tile enemyTile;
 
     private Vector3Int playerTilePosition;
+    private Vector3Int enemyTilePosition;
 
     public bool useGeneratedMap = true;
     public bool useTextFileMap = false;
@@ -24,6 +26,7 @@ public class TileMap : MonoBehaviour
     private const char chest = '$';
     private const char floor = '-';
     private const char player = '@';
+    private const char enemy = 'E';
 
     void Start()
     {
@@ -120,6 +123,7 @@ public class TileMap : MonoBehaviour
 
 
         map[1, width / 2] = player;
+        map[height / 2, width / 2] = 'E';
 
         int chestsToPlace = Random.Range(1, 5);
         Vector2Int[] corners = new Vector2Int[]
@@ -175,6 +179,10 @@ public class TileMap : MonoBehaviour
                     if (tile == '@')
                     {
                         playerTilePosition = new Vector3Int(x, y, 0);
+                    }
+                    else if (tile == 'E') 
+                    {
+                        tileToPlace = enemyTile;
                     }
                 }
             }
