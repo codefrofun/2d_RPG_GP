@@ -9,7 +9,6 @@ public class HealthSystem : MonoBehaviour
     public string healthStatus;
     public int lives;
     public int level;
-    public bool preventRevive = false;
 
     public HealthSystem()
     {
@@ -37,25 +36,6 @@ public class HealthSystem : MonoBehaviour
         }
         UpdateHealthStatus();
     }
-
-
-    public void Revive()
-    {
-        if (preventRevive)
-            return; // Skip revive during tests
-
-        if (lives > 0)
-        {
-            health = 100;
-            lives--;
-            UpdateHealthStatus();
-        }
-        else if (health == 0 && lives <= 0)
-        {
-            ResetGame();
-        }
-    }
-
 
     public void ResetGame()
     {

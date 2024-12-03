@@ -123,7 +123,7 @@ public class TileMap : MonoBehaviour
 
 
         map[1, width / 2] = player;
-        map[height / 2, width / 2] = 'E';
+        enemyTilePosition = new Vector3Int(width / 2, height / 2, 0);
 
         int chestsToPlace = Random.Range(1, 5);
         Vector2Int[] corners = new Vector2Int[]
@@ -155,6 +155,16 @@ public class TileMap : MonoBehaviour
         return mapString;
     }
 
+    public Vector3Int GetEnemyTilePosition()
+    {
+        return enemyTilePosition;
+    }
+
+    public void SetEnemyTilePosition(Vector3Int newPosition)
+    {
+        enemyTilePosition = newPosition;
+    }
+
     public void ConvertMapToTilemap(string mapData)
     {
         string[] rows = mapData.Split('\n');
@@ -171,6 +181,7 @@ public class TileMap : MonoBehaviour
                 else if (tile == 'O') tileToPlace = doorTile;
                 else if (tile == '@') tileToPlace = playerTile;
                 else if (tile == '-') tileToPlace = floorTile;
+                else if (tile == 'E') tileToPlace = enemyTile;
 
                 if (tileToPlace != null)
                 {
@@ -182,12 +193,13 @@ public class TileMap : MonoBehaviour
                     }
                     else if (tile == 'E') 
                     {
-                        tileToPlace = enemyTile;
+                        enemyTilePosition = new Vector3Int(x, y, 0);
                     }
                 }
             }
         }
         tilemap.SetTile(playerTilePosition, playerTile);
+        tilemap.SetTile(enemyTilePosition, enemyTile);
     }
 
     public Vector3Int GetPlayerTilePosition()

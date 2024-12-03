@@ -7,8 +7,11 @@ public class WASD : MonoBehaviour
     public Tilemap tilemap;
     public Tile playerTile;
     public TileMap tileMapLoaderScript;
+    public Tile enemyTile;
 
     private Vector3Int playerTilePosition;
+    private Vector3Int enemyTilePosition;
+
     private bool isMoving = false;
     private bool isInRoomTransition = false;
 
@@ -21,7 +24,7 @@ public class WASD : MonoBehaviour
         }
 
         playerTilePosition = tileMapLoaderScript.GetPlayerTilePosition();
-    } 
+    }
 
     void Update()
     {
@@ -46,19 +49,57 @@ public class WASD : MonoBehaviour
             tilemap.SetTile(targetTilePosition, playerTile);
             playerTilePosition = targetTilePosition;
             tileMapLoaderScript.SetPlayerTilePosition(playerTilePosition);
+
+            MoveEnemyTowardPlayer();
+
             StartCoroutine(MovementDelay());
         }
-        else if(targetTile == tileMapLoaderScript.doorTile && !isInRoomTransition)
+        else if (targetTile == tileMapLoaderScript.doorTile && !isInRoomTransition)
         {
             isInRoomTransition = true;
             tileMapLoaderScript.LoadMap();
             playerTilePosition = tileMapLoaderScript.GetPlayerTilePosition();
             tilemap.SetTile(playerTilePosition, playerTile);
+            MoveEnemyTowardPlayer();
             StartCoroutine(MovementDelay());
         }
         else
         {
             Debug.Log("You can't walk there!");
+        }
+    }
+
+    void MoveEnemyTowardPlayer()
+    {
+        Vector3Int enemyTilePosition = tileMapLoaderScript.GetEnemyTilePosition();
+
+        Vector3Int direction = Vector3Int.zero;
+
+        if (playerTilePosition.x > enemyTilePosition.x)
+        {
+
+        }
+        else if (playerTilePosition.x < enemyTilePosition.x)
+        {
+
+        }
+        else if (playerTilePosition.y > enemyTilePosition.y)
+        {
+
+        }
+        else if (playerTilePosition.y < enemyTilePosition.y)
+        {
+
+        }
+
+        Vector3Int newEnemyPosition = enemyTilePosition + direction;
+
+        TileBase tileAtNewPosition = tilemap.GetTile(newEnemyPosition);
+        if (tileAtNewPosition != tileMapLoaderScript.wallTile && tileAtNewPosition != tileMapLoaderScript.doorTile && tileAtNewPosition != tileMapLoaderScript.chestTile)
+        {
+            tilemap.SetTile(enemyTilePosition, tileMapLoaderScript.floorTile);
+            tileMapLoaderScript.SetEnemyTilePosition(newEnemyPosition);
+            tilemap.SetTile(newEnemyPosition, tileMapLoaderScript.enemyTile);
         }
     }
 
@@ -71,5 +112,15 @@ public class WASD : MonoBehaviour
         {
             isInRoomTransition = false;
         }
+    }
+
+    public Vector3Int GetEnemyTilePosition()
+    {
+        return enemyTilePosition;
+    }
+
+    public void SetEnemyTilePosition(Vector3Int newPosition)
+    {
+        enemyTilePosition = newPosition;
     }
 }
