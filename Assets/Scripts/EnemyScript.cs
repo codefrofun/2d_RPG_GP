@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyScript : MonoBehaviour
 {
-    public int health = 20;
+    public int health = 100;
 
     public void TakeDamage(int damage)
     {

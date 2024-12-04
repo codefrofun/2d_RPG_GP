@@ -126,14 +126,18 @@ public class WASD : MonoBehaviour
     {
         Debug.Log("Player attacked the enemy");
 
-
-        enemyScript.TakeDamage(20);
-
-        if (enemyScript.health <= 0)
+        if (enemyScript != null)
         {
-            tilemap.SetTile(enemyPosition, tileMapLoaderScript.floorTile);
-            tileMapLoaderScript.SetEnemyTilePosition(Vector3Int.zero);
+            enemyScript.TakeDamage(20);
+
+            if (enemyScript.health <= 0)
+            {
+                tilemap.SetTile(enemyPosition, tileMapLoaderScript.floorTile);
+                tileMapLoaderScript.SetEnemyTilePosition(Vector3Int.zero);
+                enemyTilePosition = Vector3Int.zero;
+            }
         }
+            
     }
 
     IEnumerator MovementDelay()
