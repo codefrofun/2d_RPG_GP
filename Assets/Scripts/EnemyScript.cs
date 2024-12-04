@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.Build;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -12,6 +9,7 @@ public class EnemyScript : MonoBehaviour
     public float lastAttackTime = 0f;
 
     public TileMap tilemap;
+    public Tile wallTile;
     private Vector3Int enemyTilePosition;
     private Vector3Int playerTilePosition;
 
@@ -30,15 +28,20 @@ public class EnemyScript : MonoBehaviour
         }
     }
 
-    public MoveTowardPlayer()
+    public void MoveTowardPlayer()
     {
-        Vector3Int direction = playerTilePosition - enemyTilePosition; direction = new Vector3Int(Mathf.Sign(direction.x), Mathf.Sign(direction.y), 0);
+        Vector3Int direction = playerTilePosition - enemyTilePosition; 
+        direction = new Vector3Int(Mathf.Sign(direction.x), Mathf.Sign(direction.y), 0);
         Vector3Int targetTile = enemyTilePosition + direction;
-        TileBase tileAtTargetPosition = tilemap.GetTile(targetTile); if (tileAtTargetPosition != null && tileAtTargetPosition != tilemap.GetTile("Wall"))
+
+        TileBase tileAtTargetPosition = tilemap.GetTile(targetTile); 
+
+        if (tileAtTargetPosition != null && tileAtTargetPosition != wallTile)
         {
             tilemap.SetTile(enemyTilePosition, null);
             tilemap.SetTile(targetTile, tilemap.GetTile("Enemy"));
-            enemyTilePosition = targetTile; // Update enemy's tile position } 
+            enemyTilePosition = targetTile; // Update enemy's tile position }
+                            
             if (enemyTilePosition == playerTilePosition)
             {
                 AttackPlayer();
@@ -47,7 +50,7 @@ public class EnemyScript : MonoBehaviour
     }
 
 
-        public void TakeDamage(int damage)
+    public void TakeDamage(int damage)
     {
         health -= damage;
         if (health <= 0)
@@ -65,10 +68,13 @@ public class EnemyScript : MonoBehaviour
 
     private void AttackPlayer()
     {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+
         if(playerTilePosition != null)
         {
-            Player HealthSystem = playerTilePosition.GetComponent<HealthSystem>();
-            if (HealthSystem != null)
+            HealthSystem healthsystem = player.GetComponent<HealthSystem>();
+
+            if (healthSystem != null)
             {
                 playerTilePosition.TakeDamage(damage);
             }

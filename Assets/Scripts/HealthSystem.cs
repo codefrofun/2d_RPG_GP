@@ -60,7 +60,7 @@ public class HealthSystem : MonoBehaviour
     IEnumerator HandleDeath()
     {
         yield return new WaitForSeconds(1.0f);
-        // game over
+        // game over panel display
     }
 
     private void UpdateHealthStatus()
