@@ -16,13 +16,14 @@ public class WASD : MonoBehaviour
     private Vector3Int enemyTilePosition;
 
     private EnemyScript enemyScript;
-    private HealthSystem healthSystem;
+    public HealthSystem healthSystem;
 
     private bool isInRoomTransition = false;
     public bool enemyTurn = false;
 
     void Start()
     {
+        enemyScript = GameObject.FindWithTag("Enemy").GetComponent<EnemyScript>();
         enemyScript = GetComponent<EnemyScript>();
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -166,10 +167,6 @@ public class WASD : MonoBehaviour
         {
             direction.y = -1;
         }
-        /* else if (direction.x = tileMapLoaderScript.wallTile || direction.y = walltile)
-        {
-
-        } */
 
         Vector3Int newEnemyPosition = enemyTilePosition + direction;
 

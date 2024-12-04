@@ -16,22 +16,11 @@ public class HealthSystem : MonoBehaviour
     public int maxHealth;
     public int enemiesKilled = 0;
 
-    public Slider healthSlider;
-
     public HealthSystem()
     {
         health = 100;
         lives = 3;
         level = 0;
-    }
-
-    public void Start()
-    {
-        if(healthSlider == null)
-        {
-            healthSlider.maxValue = maxHealth;
-            healthSlider.value = health;
-        }
     }
 
     public string ShowHUD()
@@ -62,14 +51,6 @@ public class HealthSystem : MonoBehaviour
         if (health > 100)
         {
             health = 100;
-        }
-    }
-
-    void updateHealthBar()
-    {
-        if (healthSlider != null)
-        {
-            healthSlider.value = health;
         }
     }
 
