@@ -12,11 +12,15 @@ public class WASD : MonoBehaviour
     private Vector3Int playerTilePosition;
     private Vector3Int enemyTilePosition;
 
+    private EnemyScript enemyScript;
+
     private bool isMoving = false;
     private bool isInRoomTransition = false;
+    private bool enemyTurn = false;
 
     void Start()
     {
+        enemyScript = GetComponent<EnemyScript>();
         if (tileMapLoaderScript == null)
         {
             Debug.LogError("TileMapLoaderScript is not assigned in the Inspector!");
@@ -28,7 +32,7 @@ public class WASD : MonoBehaviour
 
     void Update()
     {
-        if (!isMoving && !isInRoomTransition)
+        if (!isMoving && !isInRoomTransition && !enemyTurn)
         {
             if (Input.GetKey(KeyCode.W)) TryMove(Vector3Int.up);
             if (Input.GetKey(KeyCode.S)) TryMove(Vector3Int.down);
@@ -42,7 +46,13 @@ public class WASD : MonoBehaviour
         Vector3Int targetTilePosition = playerTilePosition + direction;
         TileBase targetTile = tilemap.GetTile(targetTilePosition);
 
-        if (targetTile != null && targetTile != tileMapLoaderScript.wallTile && targetTile != tileMapLoaderScript.chestTile && targetTile != tileMapLoaderScript.doorTile)
+        if (targetTile == tileMapLoaderScript.enemyTile)
+        {
+            AttackEnemy(targetTilePosition);
+            return;
+        }
+
+        if (targetTile != null && targetTile != tileMapLoaderScript.wallTile && targetTile != tileMapLoaderScript.chestTile && targetTile != tileMapLoaderScript.doorTile && targetTile != enemyTile)
         {
             isMoving = true;
             tilemap.SetTile(playerTilePosition, tileMapLoaderScript.floorTile);
@@ -50,7 +60,9 @@ public class WASD : MonoBehaviour
             playerTilePosition = targetTilePosition;
             tileMapLoaderScript.SetPlayerTilePosition(playerTilePosition);
 
-            MoveEnemyTowardPlayer();
+            enemyTurn = true;
+
+            Invoke("MoveEnemyTowardPlayer", 0.5f);
 
             StartCoroutine(MovementDelay());
         }
@@ -60,8 +72,13 @@ public class WASD : MonoBehaviour
             tileMapLoaderScript.LoadMap();
             playerTilePosition = tileMapLoaderScript.GetPlayerTilePosition();
             tilemap.SetTile(playerTilePosition, playerTile);
+            enemyScript.health = 20;
             MoveEnemyTowardPlayer();
             StartCoroutine(MovementDelay());
+        }
+        else if(targetTile == enemyTile)
+        {
+            Debug.Log("Enemy has beem attacked");
         }
         else
         {
@@ -77,29 +94,45 @@ public class WASD : MonoBehaviour
 
         if (playerTilePosition.x > enemyTilePosition.x)
         {
-
+            direction.x = 1;
         }
         else if (playerTilePosition.x < enemyTilePosition.x)
         {
-
+            direction.x = -1;
         }
         else if (playerTilePosition.y > enemyTilePosition.y)
         {
-
+            direction.y = 1;
         }
         else if (playerTilePosition.y < enemyTilePosition.y)
         {
-
+            direction.y = -1;
         }
 
         Vector3Int newEnemyPosition = enemyTilePosition + direction;
 
         TileBase tileAtNewPosition = tilemap.GetTile(newEnemyPosition);
-        if (tileAtNewPosition != tileMapLoaderScript.wallTile && tileAtNewPosition != tileMapLoaderScript.doorTile && tileAtNewPosition != tileMapLoaderScript.chestTile)
+        if (tileAtNewPosition != tileMapLoaderScript.wallTile && tileAtNewPosition != tileMapLoaderScript.doorTile && tileAtNewPosition != tileMapLoaderScript.chestTile && tileAtNewPosition != playerTile)
         {
             tilemap.SetTile(enemyTilePosition, tileMapLoaderScript.floorTile);
             tileMapLoaderScript.SetEnemyTilePosition(newEnemyPosition);
             tilemap.SetTile(newEnemyPosition, tileMapLoaderScript.enemyTile);
+        }
+
+        enemyTurn = false;
+    }
+
+    void AttackEnemy(Vector3Int enemyPosition)
+    {
+        Debug.Log("Player attacked the enemy");
+
+
+        enemyScript.TakeDamage(20);
+
+        if (enemyScript.health <= 0)
+        {
+            tilemap.SetTile(enemyPosition, tileMapLoaderScript.floorTile);
+            tileMapLoaderScript.SetEnemyTilePosition(Vector3Int.zero);
         }
     }
 

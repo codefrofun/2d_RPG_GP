@@ -14,7 +14,7 @@ public class HealthSystem : MonoBehaviour
     {
         health = 100;
         lives = 3;
-        level = 1;
+        level = 0;
     }
 
     public string ShowHUD()
@@ -43,7 +43,7 @@ public class HealthSystem : MonoBehaviour
     {
         if (health <= 10)
         {
-            healthStatus = "You are badly hurt!";
+            healthStatus = "Near Death";
         }
         else if (health <= 50)
         {
