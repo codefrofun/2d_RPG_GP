@@ -100,6 +100,13 @@ public class WASD : MonoBehaviour
                 tileMapLoaderScript.SetEnemyTilePosition(Vector3Int.zero);
                 enemyTilePosition = Vector3Int.zero;
                 enemyScript = null;
+
+                enemyTurn = false;
+                isMoving = false;
+
+                playerTile.SetCanMove(true);
+                playerTile.heal(10);
+                GameScoreUpdate.AddLevel(1);
             }
         }
             

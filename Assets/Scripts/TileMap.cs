@@ -37,7 +37,6 @@ public class TileMap : MonoBehaviour
     {
         if (useGeneratedMap && useTextFileMap)
         {
-            Debug.LogWarning("Only one map can be selected at a time. Switching to generated map.");
             useTextFileMap = false;
         }
 

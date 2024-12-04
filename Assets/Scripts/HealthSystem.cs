@@ -9,6 +9,7 @@ public class HealthSystem : MonoBehaviour
     public string healthStatus;
     public int lives;
     public int level;
+    public bool isDead = false;
 
     public HealthSystem()
     {
@@ -24,11 +25,11 @@ public class HealthSystem : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        if (damage < 0)
+        health -= damage;
+        if (health <= 0)
         {
-            return;
+            Die();
         }
-            health -= damage;
     }
 
     public void ResetGame()
@@ -37,6 +38,29 @@ public class HealthSystem : MonoBehaviour
         health = 100;
         lives = 3;
         UpdateHealthStatus();
+    }
+
+    public void Heal(int healAmount)
+    {
+        health += healAmount;
+        if (health > 100)
+        {
+            health = 100;
+        }
+    }
+
+    public void Die()
+    {
+        isDead = true;
+        Debug.Log("Player has died");
+        gameObject.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
+    IEnumerator HandleDeath()
+    {
+        yield return new WaitForSeconds(1.0f);
+        // game over
     }
 
     private void UpdateHealthStatus()
