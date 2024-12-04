@@ -28,6 +28,7 @@ public class TileMap : MonoBehaviour
     private const char player = '@';
     private const char enemy = 'E';
 
+
     void Start()
     {
         LoadMap();

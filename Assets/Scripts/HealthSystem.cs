@@ -14,6 +14,8 @@ public class HealthSystem : MonoBehaviour
     public bool canMove = true;
 
     public int maxHealth;
+    public int enemiesKilled = 0;
+
     public Slider healthSlider;
 
     public HealthSystem()
@@ -69,6 +71,21 @@ public class HealthSystem : MonoBehaviour
         {
             healthSlider.value = health;
         }
+    }
+
+    public void EnemyKilled()
+    {
+        enemiesKilled++;
+
+        if(enemiesKilled ==3)
+        {
+            DropKey();
+        }
+    }
+
+    private void DropKey()
+    {
+
     }
 
     public void Die()

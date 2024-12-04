@@ -19,7 +19,7 @@ public class WASD : MonoBehaviour
     private HealthSystem healthSystem;
 
     private bool isInRoomTransition = false;
-    private bool enemyTurn = false;
+    public bool enemyTurn = false;
 
     void Start()
     {
@@ -92,7 +92,8 @@ public class WASD : MonoBehaviour
             tileMapLoaderScript.LoadMap();
             playerTilePosition = tileMapLoaderScript.GetPlayerTilePosition();
             tilemap.SetTile(playerTilePosition, playerTile);
-            enemyScript.health = 20;
+            enemyScript.health = 100;
+            enemyTurn = false;
             //GameScoreUpdate.AddLevel();
             MoveEnemyTowardPlayer();
             StartCoroutine(MovementDelay());
