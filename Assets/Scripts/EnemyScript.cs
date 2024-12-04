@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Build;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class EnemyScript : MonoBehaviour
 {
@@ -20,7 +21,33 @@ public class EnemyScript : MonoBehaviour
         enemyTilePosition = tilemap.WorldToCell(transform.position);
     }
 
-    public void TakeDamage(int damage)
+    void Update()
+    {
+        if (Time.time - lastAttackTime >= attackCooldown)
+        {
+            MoveTowardPlayer(); 
+            lastAttackTime = Time.time;
+        }
+    }
+
+    public MoveTowardPlayer()
+    {
+        Vector3Int direction = playerTilePosition - enemyTilePosition; direction = new Vector3Int(Mathf.Sign(direction.x), Mathf.Sign(direction.y), 0);
+        Vector3Int targetTile = enemyTilePosition + direction;
+        TileBase tileAtTargetPosition = tilemap.GetTile(targetTile); if (tileAtTargetPosition != null && tileAtTargetPosition != tilemap.GetTile("Wall"))
+        {
+            tilemap.SetTile(enemyTilePosition, null);
+            tilemap.SetTile(targetTile, tilemap.GetTile("Enemy"));
+            enemyTilePosition = targetTile; // Update enemy's tile position } 
+            if (enemyTilePosition == playerTilePosition)
+            {
+                AttackPlayer();
+            }
+        }
+    }
+
+
+        public void TakeDamage(int damage)
     {
         health -= damage;
         if (health <= 0)
@@ -38,12 +65,12 @@ public class EnemyScript : MonoBehaviour
 
     private void AttackPlayer()
     {
-        if(playerTile != null)
+        if(playerTilePosition != null)
         {
-            Player HealthSystem = playerTile.GetComponent<HealthSystem>();
+            Player HealthSystem = playerTilePosition.GetComponent<HealthSystem>();
             if (HealthSystem != null)
             {
-                playerTile.TakeDamage(damage);
+                playerTilePosition.TakeDamage(damage);
             }
         }
     }

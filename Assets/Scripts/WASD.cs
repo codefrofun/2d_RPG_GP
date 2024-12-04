@@ -13,6 +13,7 @@ public class WASD : MonoBehaviour
     private Vector3Int enemyTilePosition;
 
     private EnemyScript enemyScript;
+    private HealthSystem healthSystem;
 
     private bool isMoving = false;
     private bool isInRoomTransition = false;
@@ -73,6 +74,7 @@ public class WASD : MonoBehaviour
             playerTilePosition = tileMapLoaderScript.GetPlayerTilePosition();
             tilemap.SetTile(playerTilePosition, playerTile);
             enemyScript.health = 20;
+            GameScoreUpdate.AddLevel();
             MoveEnemyTowardPlayer();
             StartCoroutine(MovementDelay());
         }
@@ -105,8 +107,7 @@ public class WASD : MonoBehaviour
                 isMoving = false;
 
                 playerTile.SetCanMove(true);
-                playerTile.heal(10);
-                GameScoreUpdate.AddLevel(1);
+                playerTile.Heal(10);
             }
         }
             
