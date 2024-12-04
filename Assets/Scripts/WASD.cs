@@ -9,19 +9,28 @@ public class WASD : MonoBehaviour
     public TileMap tileMapLoaderScript;
     public Tile enemyTile;
 
+
+    public bool isMoving = false;
+
     private Vector3Int playerTilePosition;
     private Vector3Int enemyTilePosition;
 
     private EnemyScript enemyScript;
     private HealthSystem healthSystem;
 
-    private bool isMoving = false;
     private bool isInRoomTransition = false;
     private bool enemyTurn = false;
 
     void Start()
     {
         enemyScript = GetComponent<EnemyScript>();
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            healthSystem = player.GetComponent<HealthSystem>();
+        }
+
         if (tileMapLoaderScript == null)
         {
             Debug.LogError("TileMapLoaderScript is not assigned in the Inspector!");
@@ -33,6 +42,16 @@ public class WASD : MonoBehaviour
 
     void Update()
     {
+        if (healthSystem != null && !healthSystem.canMove)
+        {
+            return;
+        }
+        if (enemyScript != null && enemyScript.health <= 0)
+        {
+            enemyTurn = false;
+            return;
+        }
+
         if (!isMoving && !isInRoomTransition && !enemyTurn)
         {
             if (Input.GetKey(KeyCode.W)) TryMove(Vector3Int.up);
@@ -74,9 +93,13 @@ public class WASD : MonoBehaviour
             playerTilePosition = tileMapLoaderScript.GetPlayerTilePosition();
             tilemap.SetTile(playerTilePosition, playerTile);
             enemyScript.health = 20;
-            GameScoreUpdate.AddLevel();
+            //GameScoreUpdate.AddLevel();
             MoveEnemyTowardPlayer();
             StartCoroutine(MovementDelay());
+        }
+        else if (enemyScript.health <= 0)
+        {
+            enemyTurn = false;
         }
         else if(targetTile == enemyTile)
         {
@@ -101,16 +124,17 @@ public class WASD : MonoBehaviour
                 tilemap.SetTile(enemyPosition, tileMapLoaderScript.floorTile);
                 tileMapLoaderScript.SetEnemyTilePosition(Vector3Int.zero);
                 enemyTilePosition = Vector3Int.zero;
-                enemyScript = null;
 
                 enemyTurn = false;
-                isMoving = false;
+                isMoving = true;
 
-                playerTile.SetCanMove(true);
-                playerTile.Heal(10);
+                //playerTile.SetCanMove(true);
+                if(healthSystem != null)
+                {
+                    healthSystem.Heal(10);
+                }
             }
-        }
-            
+        } 
     }
 
     void MoveEnemyTowardPlayer()
@@ -141,6 +165,10 @@ public class WASD : MonoBehaviour
         {
             direction.y = -1;
         }
+        /* else if (direction.x = tileMapLoaderScript.wallTile || direction.y = walltile)
+        {
+
+        } */
 
         Vector3Int newEnemyPosition = enemyTilePosition + direction;
 

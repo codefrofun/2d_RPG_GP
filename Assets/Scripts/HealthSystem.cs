@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HealthSystem : MonoBehaviour
 {
@@ -10,12 +11,25 @@ public class HealthSystem : MonoBehaviour
     public int lives;
     public int level;
     public bool isDead = false;
+    public bool canMove = true;
+
+    public int maxHealth;
+    public Slider healthSlider;
 
     public HealthSystem()
     {
         health = 100;
         lives = 3;
         level = 0;
+    }
+
+    public void Start()
+    {
+        if(healthSlider == null)
+        {
+            healthSlider.maxValue = maxHealth;
+            healthSlider.value = health;
+        }
     }
 
     public string ShowHUD()
@@ -49,11 +63,23 @@ public class HealthSystem : MonoBehaviour
         }
     }
 
+    void updateHealthBar()
+    {
+        if (healthSlider != null)
+        {
+            healthSlider.value = health;
+        }
+    }
+
     public void Die()
     {
         isDead = true;
+        canMove = false;
         Debug.Log("Player has died");
-        gameObject.SetActive(true);
+
+        Debug.Log("Player is dead, deactivating object: " + gameObject.activeSelf);
+
+        gameObject.SetActive(false);
         Time.timeScale = 0f;
     }
 
