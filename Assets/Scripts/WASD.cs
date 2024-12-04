@@ -24,7 +24,7 @@ public class WASD : MonoBehaviour
         if (tileMapLoaderScript == null)
         {
             Debug.LogError("TileMapLoaderScript is not assigned in the Inspector!");
-            return;  // Stop the rest of the method if it's null
+            return;  
         }
 
         playerTilePosition = tileMapLoaderScript.GetPlayerTilePosition();
@@ -86,8 +86,33 @@ public class WASD : MonoBehaviour
         }
     }
 
+    void AttackEnemy(Vector3Int enemyPosition)
+    {
+        Debug.Log("Player attacked the enemy");
+
+        if (enemyScript != null)
+        {
+            enemyScript.TakeDamage(20);
+
+            if (enemyScript.health <= 0)
+            {
+                tilemap.SetTile(enemyPosition, tileMapLoaderScript.floorTile);
+                tileMapLoaderScript.SetEnemyTilePosition(Vector3Int.zero);
+                enemyTilePosition = Vector3Int.zero;
+                enemyScript = null;
+            }
+        }
+            
+    }
+
     void MoveEnemyTowardPlayer()
     {
+        if (enemyScript == null || enemyScript.health <= 0)
+        {
+            enemyTurn = false;
+            return;
+        }
+
         Vector3Int enemyTilePosition = tileMapLoaderScript.GetEnemyTilePosition();
 
         Vector3Int direction = Vector3Int.zero;
@@ -118,26 +143,7 @@ public class WASD : MonoBehaviour
             tileMapLoaderScript.SetEnemyTilePosition(newEnemyPosition);
             tilemap.SetTile(newEnemyPosition, tileMapLoaderScript.enemyTile);
         }
-
         enemyTurn = false;
-    }
-
-    void AttackEnemy(Vector3Int enemyPosition)
-    {
-        Debug.Log("Player attacked the enemy");
-
-        if (enemyScript != null)
-        {
-            enemyScript.TakeDamage(20);
-
-            if (enemyScript.health <= 0)
-            {
-                tilemap.SetTile(enemyPosition, tileMapLoaderScript.floorTile);
-                tileMapLoaderScript.SetEnemyTilePosition(Vector3Int.zero);
-                enemyTilePosition = Vector3Int.zero;
-            }
-        }
-            
     }
 
     IEnumerator MovementDelay()
