@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class HealthSystem : MonoBehaviour
 {
@@ -16,12 +17,43 @@ public class HealthSystem : MonoBehaviour
     public int maxHealth;
     public int enemiesKilled = 0;
 
+    public Slider healthSlider;
+    public TMPro.TextMeshProUGUI killCountText;
+
     public HealthSystem()
     {
         health = 100;
         lives = 3;
         level = 0;
     }
+
+    public void Start()
+    {
+        if (healthSlider == null)
+        {
+            Debug.LogError("Health slider is not assigned!");
+        }
+        else
+        {
+            healthSlider.maxValue = maxHealth;
+            healthSlider.value = health;
+        }
+
+        if (healthSlider == null)
+        {
+            Debug.LogError("Health slider is not assigned!");
+        }
+        else
+        {
+            healthSlider.maxValue = maxHealth;
+            healthSlider.value = health;
+        }
+        EnemyKilled();
+        UpdateKillCountUI();
+
+        Debug.Log("Player Health: " + health);
+    }
+
 
     public string ShowHUD()
     {
@@ -42,6 +74,7 @@ public class HealthSystem : MonoBehaviour
         Console.WriteLine("Startover");
         health = 100;
         lives = 3;
+        enemiesKilled = 0;
         UpdateHealthStatus();
     }
 
@@ -54,19 +87,35 @@ public class HealthSystem : MonoBehaviour
         }
     }
 
+    void updateHealthBar()
+    {
+        if (healthSlider != null)
+        {
+            healthSlider.value = health;
+        }
+    }
+
     public void EnemyKilled()
     {
         enemiesKilled++;
 
-        if(enemiesKilled ==3)
+        if (enemiesKilled == 1)
         {
             DropKey();
         }
     }
 
+    private void UpdateKillCountUI()
+    {
+        if (killCountText != null)
+        {
+            killCountText.text = "Kills: " + enemiesKilled;
+        }
+    }
+
     private void DropKey()
     {
-
+        Debug.Log("Key dropped!");
     }
 
     public void Die()

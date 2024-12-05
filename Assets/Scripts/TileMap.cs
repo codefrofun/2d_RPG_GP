@@ -134,7 +134,7 @@ public class TileMap : MonoBehaviour
             new Vector2Int(width - 2, height - 2)
         };
 
-        for(int i = 0; i < chestsToPlace; i++)
+        for (int i = 0; i < chestsToPlace; i++)
         {
             int randomCornerIndex = Random.Range(0, corners.Length);
             Vector2Int corner = corners[randomCornerIndex];
@@ -191,7 +191,7 @@ public class TileMap : MonoBehaviour
                     {
                         playerTilePosition = new Vector3Int(x, y, 0);
                     }
-                    else if (tile == 'E') 
+                    else if (tile == 'E')
                     {
                         enemyTilePosition = new Vector3Int(x, y, 0);
                     }

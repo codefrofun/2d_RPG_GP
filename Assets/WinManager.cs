@@ -28,8 +28,10 @@ public class WinManager : MonoBehaviour
 
     public void ShowWinMessage()
     {
-        winText.gameObject.SetActive(true);
-        winText.text = "You Win!";
-        Time.timeScale = 0f;
+        if (winText != null)
+        {
+            winText.text = "You Win!";
+            winText.gameObject.SetActive(true);
+        }
     }
 }

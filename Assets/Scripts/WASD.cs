@@ -8,6 +8,7 @@ public class WASD : MonoBehaviour
     public Tile playerTile;
     public TileMap tileMapLoaderScript;
     public Tile enemyTile;
+    public Tile openedChestTile;
 
 
     public bool isMoving = false;
@@ -16,17 +17,28 @@ public class WASD : MonoBehaviour
     private Vector3Int enemyTilePosition;
 
     private EnemyScript enemyScript;
-    public HealthSystem healthSystem;
+    private HealthSystem healthSystem;
 
     private bool isInRoomTransition = false;
     public bool enemyTurn = false;
 
     void Start()
     {
-        enemyScript = GameObject.FindWithTag("Enemy").GetComponent<EnemyScript>();
-        enemyScript = GetComponent<EnemyScript>();
-
         GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            healthSystem = player.GetComponent<HealthSystem>();
+            if (healthSystem == null)
+            {
+                Debug.LogError("HealthSystem script is not attached to the player object!");
+            }
+        }
+        else
+        {
+            Debug.LogError("Player object not found!");
+        }
+
+        enemyScript = GetComponent<EnemyScript>();
         if (player != null)
         {
             healthSystem = player.GetComponent<HealthSystem>();
@@ -35,10 +47,20 @@ public class WASD : MonoBehaviour
         if (tileMapLoaderScript == null)
         {
             Debug.LogError("TileMapLoaderScript is not assigned in the Inspector!");
-            return;  
+            return;
         }
 
         playerTilePosition = tileMapLoaderScript.GetPlayerTilePosition();
+
+        if (tilemap == null)
+        {
+            Debug.LogError("Tilemap reference is missing in the Inspector!");
+        }
+
+        if (tileMapLoaderScript == null)
+        {
+            Debug.LogError("TileMapLoaderScript reference is missing in the Inspector!");
+        }
     }
 
     void Update()
@@ -47,6 +69,7 @@ public class WASD : MonoBehaviour
         {
             return;
         }
+
         if (enemyScript != null && enemyScript.health <= 0)
         {
             enemyTurn = false;
@@ -73,7 +96,35 @@ public class WASD : MonoBehaviour
             return;
         }
 
-        if (targetTile != null && targetTile != tileMapLoaderScript.wallTile && targetTile != tileMapLoaderScript.chestTile && targetTile != tileMapLoaderScript.doorTile && targetTile != enemyTile)
+        if (targetTile == tileMapLoaderScript.chestTile)
+        {
+            PlayerInventory playerInventory = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerInventory>();
+            if (playerInventory != null && playerInventory.hasKey)
+            {
+                tilemap.SetTile(targetTilePosition, openedChestTile);
+                playerInventory.hasKey = false;
+
+                ChestWin chestWin = FindObjectOfType<ChestWin>();
+                if (chestWin != null)
+                {
+                    chestWin.OpenChest();
+                }
+
+                Debug.Log("Chest opened! You win!");
+
+                isMoving = false;
+
+                Invoke("ReturnToMainMenu", 3f);
+                return;
+            }
+            else
+            {
+                Debug.Log("You need a key to open the chest.");
+                return;
+            }
+        }
+
+        if (targetTile != null && targetTile != tileMapLoaderScript.wallTile && targetTile != tileMapLoaderScript.doorTile && targetTile != enemyTile)
         {
             isMoving = true;
             tilemap.SetTile(playerTilePosition, tileMapLoaderScript.floorTile);
@@ -95,23 +146,25 @@ public class WASD : MonoBehaviour
             tilemap.SetTile(playerTilePosition, playerTile);
             enemyScript.health = 100;
             enemyTurn = false;
-            //GameScoreUpdate.AddLevel();
+            isInRoomTransition = false;
+
             MoveEnemyTowardPlayer();
             StartCoroutine(MovementDelay());
+
+            isMoving = false;
         }
-        else if (enemyScript.health <= 0)
-        {
-            enemyTurn = false;
-        }
-        else if(targetTile == enemyTile)
-        {
-            Debug.Log("Enemy has beem attacked");
-        }
+
         else
         {
             Debug.Log("You can't walk there!");
         }
     }
+
+    void ReturnToMainMenu()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+    }
+
 
     void AttackEnemy(Vector3Int enemyPosition)
     {
@@ -131,12 +184,12 @@ public class WASD : MonoBehaviour
                 isMoving = true;
 
                 //playerTile.SetCanMove(true);
-                if(healthSystem != null)
+                if (healthSystem != null)
                 {
                     healthSystem.Heal(10);
                 }
             }
-        } 
+        }
     }
 
     void MoveEnemyTowardPlayer()
@@ -167,6 +220,10 @@ public class WASD : MonoBehaviour
         {
             direction.y = -1;
         }
+        /* else if (direction.x = tileMapLoaderScript.wallTile || direction.y = walltile)
+        {
+
+        } */
 
         Vector3Int newEnemyPosition = enemyTilePosition + direction;
 

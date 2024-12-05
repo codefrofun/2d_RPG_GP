@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class ChestWin : MonoBehaviour
 {
@@ -22,22 +23,32 @@ public class ChestWin : MonoBehaviour
     private void Update()
     {
         Vector3Int playerTilePosition = tilemap.WorldToCell(GameObject.FindGameObjectWithTag("Player").transform.position);
-        if (playerTilePosition == chestTilePosition)
+        if (playerTilePosition == chestTilePosition && !isOpened)
         {
             PlayerInventory playerInventory = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerInventory>();
-            if (playerInventory != null && playerInventory.hasKey && !isOpened)
+            if (playerInventory != null && playerInventory.hasKey)
             {
                 OpenChest();
                 playerInventory.hasKey = false;
             }
         }
     }
-    private void OpenChest()
+
+    public void OpenChest()
     {
         isOpened = true;
         if (winManager != null)
         {
             winManager.ShowWinMessage();
         }
+
+        tilemap.SetTile(chestTilePosition, null);
+
+        Invoke("ReturnToMainMenu", 2f);
+    }
+
+    private void ReturnToMainMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
     }
 }

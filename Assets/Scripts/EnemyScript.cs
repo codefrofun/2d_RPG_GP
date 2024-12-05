@@ -1,4 +1,3 @@
-using UnityEditor.Scripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -11,14 +10,13 @@ public class EnemyScript : MonoBehaviour
 
     public Tilemap tilemap;
     public Tile wallTile;
-    public Tile floorTile;
     private WASD playerScript;
     private Vector3Int enemyTilePosition;
     private Vector3Int playerTilePosition;
 
     private bool isDead = false;
 
-    public float attackRange = 1f;
+
 
     private void Start()
     {
@@ -26,16 +24,19 @@ public class EnemyScript : MonoBehaviour
         {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
 
-            if (player != null)
+            Debug.Log("Looking for player: " + GameObject.FindGameObjectWithTag("Player"));
+
+            if (playerScript != null)
             {
                 playerScript = player.GetComponent<WASD>();
-                if (playerScript != null)
+
+                if (player == null)
                 {
-                    playerTilePosition = tilemap.WorldToCell(player.transform.position);
+                    Debug.LogError("WASD script not found on player! The enemy won't be able to interact with the player properly.");
                 }
                 else
                 {
-                    Debug.LogError("WASD script not found on player! The enemy won't be able to interact with the player properly.");
+                    playerTilePosition = tilemap.WorldToCell(player.transform.position);
                 }
             }
             else
@@ -43,7 +44,6 @@ public class EnemyScript : MonoBehaviour
                 Debug.LogError("Player not found, the enemy can't interact with player");
             }
         }
-
         enemyTilePosition = tilemap.WorldToCell(transform.position);
     }
 
@@ -63,48 +63,9 @@ public class EnemyScript : MonoBehaviour
 
     public void MoveTowardPlayer()
     {
-        Vector3 direction = playerTilePosition - enemyTilePosition;
-
-        if (Mathf.Abs((int)direction.x) <= (int)attackRange && Mathf.Abs((int)direction.y) <= (int)attackRange)
-        {
-            AttackPlayer();
-        }
-        else
-        {
-            Vector3 moveDirection = Vector3.zero;
-
-            if (Mathf.Abs((int)direction.x) > Mathf.Abs((int)direction.y))
-            {
-                moveDirection.x = Mathf.Sign(direction.x);
-            }
-            else
-            {
-                moveDirection.y = Mathf.Sign(direction.y);
-            }
-
-            Vector3Int newEnemyPosition = new Vector3Int((int)(enemyTilePosition.x + moveDirection.x),
-                                                         (int)(enemyTilePosition.y + moveDirection.y),
-                                                         (int)enemyTilePosition.z);
-
-            TileBase tileAtNewPosition = tilemap.GetTile(newEnemyPosition);
-
-            if (tileAtNewPosition != wallTile && tileAtNewPosition != playerScript.playerTile && tileAtNewPosition != null)
-            {
-                tilemap.SetTile(enemyTilePosition, floorTile);
-                enemyTilePosition = newEnemyPosition;
-                tilemap.SetTile(enemyTilePosition, wallTile);
-            }
-        }
+        // make code work here !! move enemy toward player
     }
 
-
-    private void AttackPlayer()
-    {
-        if (playerScript != null && playerScript.healthSystem != null)
-        {
-            playerScript.healthSystem.TakeDamage(damage);
-        }
-    }
 
     public void TakeDamage(int damage)
     {
@@ -112,6 +73,10 @@ public class EnemyScript : MonoBehaviour
         if (health <= 0)
         {
             Die();
+        }
+        else
+        {
+            Debug.Log("Enemy Health: " + health);
         }
     }
 
@@ -132,5 +97,13 @@ public class EnemyScript : MonoBehaviour
 
         this.enabled = false;
         Destroy(gameObject);
+    }
+
+    private void AttackPlayer()
+    {
+        if (playerScript == null)
+        {
+            playerScript.isMoving = true;
+        }
     }
 }
